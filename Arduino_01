@@ -2,3 +2,52 @@
 //Get info from serial port 
 //Control 2 servo motors
 //Control 1 relay
+
+
+#include <Servo.h>
+
+Servo servoPan;
+int posPan = 0;
+int delayPan = 15; // this sets delay between steps
+// higher value gives lower speed
+int posTilt = 135;
+
+int pinTrig = 13;
+int holdTrig = 300;  // time trigger relay on (microseconds)
+
+void setup(){
+  servoPan.attach(11);
+  servoTilt.attach(10);
+  pinMode(pinTrig, LOW);
+  Serial.begin(9600);
+}
+
+void loop(){
+
+  /// Trigger ////
+  if(Serial.available()){
+    val = Serial.read();
+    if(val == 1){
+      digitalWrite(pinTrig, HIGH);
+      delay (holdTrig);
+    }
+    else{
+      digitalWrite(pinTrig, LOW);
+    } 
+  }   
+
+  /////   controll PAN servo /////
+  for(posPan = 0; posPan < 180; posPan +=1){
+    servoPan.write(posPan);
+    delay(delayPan);
+  }
+  for(posPan = 180; posPan>=1; posPan -=1){
+    servoPan.write(posPan);
+    delay(delayPan);  
+  }
+
+  //// controll TILT servo ////
+  servoTilt.write(posTilt);
+
+}
+
