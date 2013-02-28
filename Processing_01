@@ -2,3 +2,36 @@
 //Get data from webpage
 //Convert data to actions
 //Signal actions via serial port to Arduino
+/////////////////////////////////////////////////
+
+
+import processing.serial.*;
+Serial myPort;
+
+int trigger = 0;
+String[] oldData;
+
+void setup() {
+  size(100, 100);
+  String portName = Serial.list()[1];        // may need to change serial list number
+  myPort = new Serial(this, portName, 9600);   // will not run if nothing conencted to portName
+}
+
+void draw() {
+
+  String[] data=loadStrings("http://upverter.com");
+  if (data != oldData) {
+    for (int i = 0 ; i < data.length; i++) {
+      String[] m1 = match(data[i], "mailgun");
+      if (m1 != null) {
+        trigger = 1;
+        println(trigger);
+      }
+      else{
+        trigger = 0;
+      }
+    }
+    oldData = data;
+  }
+   myPort.write(trigger);
+}
